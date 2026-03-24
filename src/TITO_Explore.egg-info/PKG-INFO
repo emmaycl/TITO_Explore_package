@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: TITO_Explore
+Version: 0.1.0
+Summary: A Python package for normalization, comparison, inversion sets, joins, and Hasse diagrams of TITOs.
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
