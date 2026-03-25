@@ -35,18 +35,26 @@ def main() -> None:
     for start, value, indicator in table_rows:
         print(f"{start:<10} | {value:<10} | {indicator:<10}")
 
-    blocks, waxing_waning, report = compute_tito_join(tito1, tito2)
-    joined_tito = TranslationInvariantTotalOrder(
-        n=tito1.n,
-        num_blocks=len(blocks),
-        vectors=blocks,
-        waxing_waning=waxing_waning,
-    )
-    print("\nStep 3: Reconstructed join TITO")
-    print("  Blocks:", blocks)
-    print("  Waxing/Waning:", waxing_waning)
-    print("  Report:", report)
-    print("  Reconstructed TITO:", joined_tito)
+    join_result = compute_tito_join(tito1, tito2)
+
+    if isinstance(join_result, TranslationInvariantTotalOrder):
+        # Already comparable; larger operand returned directly.
+        joined_tito = join_result
+        print("\nStep 3: Comparable TITOs — larger one returned directly")
+        print("  Returned TITO:", joined_tito)
+    else:
+        blocks, waxing_waning, report = join_result
+        joined_tito = TranslationInvariantTotalOrder(
+            n=tito1.n,
+            num_blocks=len(blocks),
+            vectors=blocks,
+            waxing_waning=waxing_waning,
+        )
+        print("\nStep 3: Reconstructed join TITO")
+        print("  Blocks:", blocks)
+        print("  Waxing/Waning:", waxing_waning)
+        print("  Report:", report)
+        print("  Reconstructed TITO:", joined_tito)
 
 
 if __name__ == "__main__":

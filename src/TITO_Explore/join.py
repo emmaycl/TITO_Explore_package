@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from TITO_Explore.inversion_set import tito_to_inversion_set
 from TITO_Explore.reflection import reflection_rows_to_blocks_and_order
@@ -28,6 +28,59 @@ def inversion_matrix_to_edges(
             for value in values:
                 edges.append((i, (i + value) % n, [value]))
     return edges
+
+
+def _cell_subset(cell_a: MatrixCell | None, cell_b: MatrixCell | None) -> bool:
+    """Returns True iff inversion cell A is a subset of cell B."""
+    if cell_a is None:
+        return True
+    if cell_b is None:
+        return False
+
+    vals_a, star_a = cell_a
+    vals_b, star_b = cell_b
+
+    set_a = set(vals_a)
+    set_b = set(vals_b)
+
+    if star_a and not star_b:
+        return False
+
+    if not star_a and star_b:
+        return set_a.issubset(set_b)
+
+    # star_a == star_b (both True or both False)
+    return set_a.issubset(set_b)
+
+
+def _matrix_subset(matrix_a: List[List[MatrixCell | None]], matrix_b: List[List[MatrixCell | None]]) -> bool:
+    """Elementwise subset check between two inversion matrices of the same size."""
+    if len(matrix_a) != len(matrix_b):
+        return False
+
+    n = len(matrix_a)
+    for i in range(n):
+        for j in range(n):
+            if not _cell_subset(matrix_a[i][j], matrix_b[i][j]):
+                return False
+    return True
+
+
+def _tito_to_window(
+    tito: TranslationInvariantTotalOrder,
+    inv_matrix: List[List[MatrixCell | None]] | None = None,
+) -> Tuple[List[List[int]], List[int], Optional[Dict[str, Any]]]:
+    """
+    Converts a single TITO into the same window/flag/report triple that
+    compute_tito_join returns. Accepts an optional precomputed inversion
+    matrix to avoid recomputation when available.
+    """
+    inv = inv_matrix if inv_matrix is not None else tito_to_inversion_set(tito)
+    edges = inversion_matrix_to_edges(inv, tito.n)
+    closure = compute_closure(tito.n, edges)
+    final_matrix = update_indicators(closure)
+    table_rows = generate_reflection_table(final_matrix)
+    return reflection_rows_to_blocks_and_order(table_rows, tito.n)
 
 
 def initialize_custom_matrix(n: int, initial_edges: List[Edge]) -> List[List[MatrixCell]]:
@@ -129,10 +182,30 @@ def compute_join_reflection_table(
 def compute_tito_join(
     tito1: TranslationInvariantTotalOrder,
     tito2: TranslationInvariantTotalOrder,
-) -> Tuple[List[List[int]], List[int], Optional[Dict[str, Any]]]:
+) -> Union[TranslationInvariantTotalOrder, Tuple[List[List[int]], List[int], Optional[Dict[str, Any]]]]:
     """
-    Computes the join of two TITOs and returns the resulting window notation,
-    waxing/waning flags, and anomaly report.
+    Computes the join of two TITOs. If the two TITOs are already comparable
+    in the lattice (one inversion set contained in the other), the larger
+    original TITO object is returned directly; otherwise the join is computed
+    via reflection-table closure and returned in window/flag/report form.
     """
-    table_rows = compute_join_reflection_table(tito1, tito2)
+    if tito1.n != tito2.n:
+        raise ValueError("Both TITOs must have the same modulus n.")
+
+    inv1 = tito_to_inversion_set(tito1)
+    inv2 = tito_to_inversion_set(tito2)
+
+    subset_1_in_2 = _matrix_subset(inv1, inv2)
+    subset_2_in_1 = _matrix_subset(inv2, inv1)
+
+    if subset_1_in_2:
+        return tito2
+
+    if subset_2_in_1:
+        return tito1
+
+    edges = inversion_matrix_to_edges(inv1, tito1.n) + inversion_matrix_to_edges(inv2, tito1.n)
+    closure = compute_closure(tito1.n, edges)
+    final_matrix = update_indicators(closure)
+    table_rows = generate_reflection_table(final_matrix)
     return reflection_rows_to_blocks_and_order(table_rows, tito1.n)

@@ -122,6 +122,7 @@ def analyze_congruence_class_pairs(tito_object: "TranslationInvariantTotalOrder"
                         pair_relationships[key]["complements"] = (complement_i, complement_j)
 
     return pair_relationships
+
 def tito_to_inversion_set(
     tito: TranslationInvariantTotalOrder
 ) -> List[List[Optional[Tuple[List[int], bool]]]]:
