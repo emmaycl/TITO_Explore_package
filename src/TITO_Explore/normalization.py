@@ -1,16 +1,16 @@
-#define the TITO Object Data Structure
 from __future__ import annotations
-from collections import defaultdict, deque
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import List
 from TITO_Explore.types import TranslationInvariantTotalOrder
 
-#The normalization function for TITO block notations
 def process_tito_blocks(tito: TranslationInvariantTotalOrder) -> List[List[int]]:
     """
     Normalizes each block so that:
       - The element with the smallest residue (mod n) is placed first.
-      - The normalized block represents the same TITO as the input window notation.
+      - Waxing blocks: wrapped elements get +n.
+      - Waning blocks:  wrapped elements get -n.
+      - The block is then shifted down by a multiple of n so the first entry
+        lies in [0, n-1].
+
     Returns a list of normalized blocks (does not mutate the TITO).
     """
     processed_blocks: List[List[int]] = []

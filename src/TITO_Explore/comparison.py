@@ -1,33 +1,50 @@
 from __future__ import annotations
-from collections import defaultdict, deque
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set, Tuple
-from TITO_Explore.types import TranslationInvariantTotalOrder
+
+from typing import Any, Dict, List, Optional, Tuple
+
 from TITO_Explore.normalization import process_tito_blocks
-from TITO_Explore.utils import get_congruence_class_waning_vector
+from TITO_Explore.types import TranslationInvariantTotalOrder
+
+
+def _process_pair(
+    pos_i: int,
+    val_i: int,
+    pos_j: int,
+    val_j: int,
+    is_waning: bool,
+    n: int,
+) -> int:
+    if pos_i < pos_j:
+        tito = TranslationInvariantTotalOrder(
+            n=n, num_blocks=1, vectors=[[val_i, val_j]], waxing_waning=[1 if is_waning else 0]
+        )
+        leq = True
+    else:
+        tito = TranslationInvariantTotalOrder(
+            n=n, num_blocks=1, vectors=[[val_j, val_i]], waxing_waning=[1 if is_waning else 0]
+        )
+        leq = False
+
+    if not leq:
+        if tito.waxing_waning[0] == 1:
+            tito.vectors[0][0], tito.vectors[0][1] = tito.vectors[0][1], tito.vectors[0][0] - tito.n
+        else:
+            tito.vectors[0][0], tito.vectors[0][1] = tito.vectors[0][1], tito.vectors[0][0] + tito.n
+
+    normal = tito.vectors[0][0] - (tito.vectors[0][0] % tito.n)
+    for idx in range(len(tito.vectors[0])):
+        tito.vectors[0][idx] -= normal
+
+    _, value = tito.vectors[0]
+    return value
+
 
 def analyze_congruence_class_pairs(
     tito: TranslationInvariantTotalOrder,
 ) -> Dict[Any, Dict[str, Any]]:
-    """
-    Analyses all pairs of congruence classes in a TITO and assigns each pair
-    to one of the following cases:
-
-        case  0  — special_case_empty          (no inversion)
-        case -1  — special_case_all             (full infinite inversion)
-        case  1  — different_blocks_ordered
-        case  2  — different_blocks_unordered
-        case  3  — same_block_ordered           (waxing, value >= n)
-        case  4  — same_block_unordered         (waxing, value < 0)
-        case  5  — same_block_unordered_waning  (waning, value >= 0)
-        case  6  — same_block_ordered_waning    (waning, value < -n or value <= -1 outside [-n,-1])
-
-    Returns a dict keyed by ((i, j), (block_i, pos_i), (block_j, pos_j)).
-    """
     normalized_blocks = process_tito_blocks(tito)
-
-    # Map each congruence class to all (block_idx, position, value) occurrences
     class_to_occurrences: Dict[int, List[Tuple[int, int, int]]] = {}
+
     for block_idx, block in enumerate(normalized_blocks):
         for pos, value in enumerate(block):
             cc = value % tito.n
@@ -42,7 +59,6 @@ def analyze_congruence_class_pairs(
 
             for (block_i, pos_i, val_i) in class_to_occurrences[i]:
                 for (block_j, pos_j, val_j) in class_to_occurrences[j]:
-
                     value: Optional[int] = None
 
                     if block_i != block_j:
