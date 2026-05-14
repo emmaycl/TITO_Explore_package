@@ -53,4 +53,4 @@ Computes the least upper bound (join) of two TITOs via a modified **Floyd-Warsha
 ---
 
 For a visual summary of the mathematical foundations and algorithmic approach of this project, please view our research poster:
-**[Download Project Poster (PDF)](./project_poster.pdf)**
+**[Project Poster (PDF)](./project_poster.pdf)**
