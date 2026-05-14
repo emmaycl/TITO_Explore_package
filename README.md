@@ -12,4 +12,4 @@ Python tools for working with translation-invariant total orders (TITOs).
 
 See [`examples/`](./examples/) for small usage scripts.
 
-Paper documentation for the package will be available on arXiv soon. 
+Paper documentation for the package will be available on arXiv soon. A poster summarizing our project is available here: [`project_poster.pdf`](./project_poster.pdf).
