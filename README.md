@@ -4,6 +4,7 @@ TITO_Explore is a specialized Python package designed for the computational stud
 
 TITOs are central to algebraic combinatorics, specifically in the study of affine symmetric groups, weak orders, and lattice structures in representation theory. This project provides a rigorous algorithmic framework to bridge abstract order theory with finite computational representations.
 
+Quick Link: [Python Notebook Demo](https://github.com/emmaycl/TITO_Explore_package/blob/main/examples/examples_demo.ipynb)
 ---
 
 ## Mathematical Definitions
