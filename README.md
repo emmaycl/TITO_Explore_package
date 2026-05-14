@@ -39,10 +39,16 @@ Standardizes window notations into a canonical form. The algorithm reorders bloc
 ### 2. $O(n^2)$ Weak Order Comparison
 TITO_Explore partitions $N(\prec)$ into $\frac{n(n+1)}{2}$ disjoint subsets. By classifying residue class pairs into combinatorial groups, it determines global weak-order relations in quadratic time.
 
+<img width="708" height="367" alt="image" src="https://github.com/user-attachments/assets/f8dd9af5-9937-4669-ac77-887002353608" />
+
+
 ### 3. Graph-Based Join Computation
 Computes the least upper bound (join) of two TITOs via a modified **Floyd-Warshall** algorithm:
 - **Complexity:** $O(n^3 W^2)$, where $W$ is the maximum cardinality of basis increments.
 - **Infinite Propagation:** Uses cycle detection in the graph to identify infinite inversion sets $(a,b)^*$.
+
+<img width="636" height="326" alt="image" src="https://github.com/user-attachments/assets/9bbd411f-9656-4e61-a64a-21a1861a0135" />
+
 
 ---
 
