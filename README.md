@@ -45,7 +45,7 @@ TITO_Explore partitions $N(\prec)$ into $\frac{n(n+1)}{2}$ disjoint subsets. By 
 
 ### 3. Graph-Based Join Computation
 Computes the least upper bound (join) of two TITOs via a modified **Floyd-Warshall** algorithm:
-- **Complexity:** $O(n^3 W^2)$, where $W$ is the maximum cardinality of basis increments.
+- **Complexity:** $O(n^3 W^2)$, where $W$ is the maximum cardinality of basis increments (aka length of the vector in the reflection table in our code).
 - **Infinite Propagation:** Uses cycle detection in the graph to identify infinite inversion sets $(a,b)^*$.
 
 <img width="636" height="326" alt="image" src="https://github.com/user-attachments/assets/9bbd411f-9656-4e61-a64a-21a1861a0135" />
