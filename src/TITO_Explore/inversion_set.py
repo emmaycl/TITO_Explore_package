@@ -26,10 +26,11 @@ def get_congruence_class_waning_vector(tito_object: "TranslationInvariantTotalOr
 
 def process(pos_i: int, val_i: int, pos_j: int, val_j: int, is_waning: bool, n: int) -> int:
     """
-    Your 'possess' template logic as provided.
-    Returns an integer 'value' used by analyze_congruence_class_pairs.
+    # Turn each pair of congruence classes into a small TITO object
+    # This TITO object is then normalized, so the first object would be between 0 and n-1
+    # this helper function returns the second value of the small TITO object
     """
-    # Ensure (val_i, val_j) is ordered by position (pos_i < pos_j)
+    #analyze each pair of residue class, create sub-TITO object with only one pair of congruence classes
     if pos_i < pos_j:
         tito = TranslationInvariantTotalOrder(n=n, num_blocks=1, vectors=[[val_i, val_j]], waxing_waning=[1 if is_waning else 0])
         leq = True
@@ -37,6 +38,7 @@ def process(pos_i: int, val_i: int, pos_j: int, val_j: int, is_waning: bool, n: 
         tito = TranslationInvariantTotalOrder(n=n, num_blocks=1, vectors=[[val_j, val_i]], waxing_waning=[1 if is_waning else 0])
         leq = False
 
+    #adjust the block so that it's in our defined normalized form
     if not leq:
         if tito.waxing_waning[0] == 1:
             tito.vectors[0][0], tito.vectors[0][1] = tito.vectors[0][1], tito.vectors[0][0] - tito.n
@@ -56,6 +58,7 @@ def analyze_congruence_class_pairs(tito_object: "TranslationInvariantTotalOrder"
     """
     Analyzes all pairs of congruence classes in a TITO and categorizes them.
     Returns a dict keyed by ((i,j),(block_i,pos_i),(block_j,pos_j)) -> info dict.
+    Classifies which of the 6 cases each pair of residue class falls into. 
     """
     normalized_blocks = process_tito_blocks(tito_object)
 
