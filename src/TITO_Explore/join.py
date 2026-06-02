@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Tuple, Union
 
+from TITO_Explore.comparison import compare_titos_overall
 from TITO_Explore.inversion_set import tito_to_inversion_set
 from TITO_Explore.reflection import reflection_rows_to_blocks_and_order
 from TITO_Explore.types import TranslationInvariantTotalOrder
@@ -28,42 +29,6 @@ def inversion_matrix_to_edges(
             for value in values:
                 edges.append((i, (i + value) % n, [value]))
     return edges
-
-
-def _cell_subset(cell_a: MatrixCell | None, cell_b: MatrixCell | None) -> bool:
-    """Returns True iff inversion cell A is a subset of cell B."""
-    if cell_a is None:
-        return True
-    if cell_b is None:
-        return False
-
-    vals_a, star_a = cell_a
-    vals_b, star_b = cell_b
-
-    set_a = set(vals_a)
-    set_b = set(vals_b)
-
-    if star_a and not star_b:
-        return False
-
-    if not star_a and star_b:
-        return set_a.issubset(set_b)
-
-    # star_a == star_b (both True or both False)
-    return set_a.issubset(set_b)
-
-
-def _matrix_subset(matrix_a: List[List[MatrixCell | None]], matrix_b: List[List[MatrixCell | None]]) -> bool:
-    """Elementwise subset check between two inversion matrices of the same size."""
-    if len(matrix_a) != len(matrix_b):
-        return False
-
-    n = len(matrix_a)
-    for i in range(n):
-        for j in range(n):
-            if not _cell_subset(matrix_a[i][j], matrix_b[i][j]):
-                return False
-    return True
 
 
 def _tito_to_window(
@@ -186,25 +151,24 @@ def compute_tito_join(
 ) -> Union[TranslationInvariantTotalOrder, Tuple[List[List[int]], List[int], Optional[Dict[str, Any]]]]:
     """
     Computes the join of two TITOs. If the two TITOs are already comparable
-    in the lattice (one inversion set contained in the other), the larger
-    original TITO object is returned directly; otherwise the join is computed
-    via reflection-table closure and returned in window/flag/report form.
+    in the TITO order, the larger original TITO object is returned directly.
+    If they are equal, either original TITO may be returned. Otherwise the join
+    is computed via reflection-table closure and returned in window/flag/report
+    form.
     """
     if tito1.n != tito2.n:
         raise ValueError("Both TITOs must have the same modulus n.")
 
-    inv1 = tito_to_inversion_set(tito1)
-    inv2 = tito_to_inversion_set(tito2)
-
-    subset_1_in_2 = _matrix_subset(inv1, inv2)
-    subset_2_in_1 = _matrix_subset(inv2, inv1)
-
-    if subset_1_in_2:
+    comparison = compare_titos_overall(tito1, tito2)
+    if comparison == "tito1 < tito2":
         return tito2
-
-    if subset_2_in_1:
+    if comparison == "tito1 > tito2":
+        return tito1
+    if comparison == "tito1 = tito2":
         return tito1
 
+    inv1 = tito_to_inversion_set(tito1)
+    inv2 = tito_to_inversion_set(tito2)
     edges = inversion_matrix_to_edges(inv1, tito1.n) + inversion_matrix_to_edges(inv2, tito1.n)
     closure = compute_closure(tito1.n, edges)
     final_matrix = update_indicators(closure)
