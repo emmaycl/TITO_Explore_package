@@ -87,7 +87,8 @@ def initialize_custom_matrix(n: int, initial_edges: List[Edge]) -> List[List[Mat
     """Initializes an n by n matrix with edge values and a 0 indicator."""
     matrix: List[List[MatrixCell]] = [[([], 0) for _ in range(n)] for _ in range(n)]
     for u, v, values in initial_edges:
-        matrix[u][v] = (list(set(values)), 0)
+        current_values, indicator = matrix[u][v]
+        matrix[u][v] = (list(set(current_values) | set(values)), indicator)
     return matrix
 
 
@@ -209,3 +210,31 @@ def compute_tito_join(
     final_matrix = update_indicators(closure)
     table_rows = generate_reflection_table(final_matrix)
     return reflection_rows_to_blocks_and_order(table_rows, tito1.n)
+
+
+def compute_tito_join_tito(
+    tito1: TranslationInvariantTotalOrder,
+    tito2: TranslationInvariantTotalOrder,
+) -> TranslationInvariantTotalOrder:
+    """
+    Computes the join of two TITOs and always returns a TITO object.
+
+    This is the object-returning counterpart to compute_tito_join. Comparable
+    inputs return the larger original TITO; otherwise the closure result is
+    reconstructed into a TranslationInvariantTotalOrder.
+    """
+    join_result = compute_tito_join(tito1, tito2)
+
+    if isinstance(join_result, TranslationInvariantTotalOrder):
+        return join_result
+
+    blocks, waxing_waning, report = join_result
+    if report is not None:
+        raise ValueError(f"Could not reconstruct join TITO cleanly: {report}")
+
+    return TranslationInvariantTotalOrder(
+        n=tito1.n,
+        num_blocks=len(blocks),
+        vectors=blocks,
+        waxing_waning=waxing_waning,
+    )
