@@ -26,8 +26,13 @@ The set of all inversions is the **Inversion Set** $N(\prec)$. The **weak order*
 $$\prec_1 \le \prec_2 \iff N(\prec_1) \subseteq N(\prec_2)$$
 
 ### 4. Star Notation
+
 For handling infinite reflection indices, we define the **Star Notation**:
-$$(a,b)^* := \{(a, b+kn) \mid k \in \mathbb{Z}\}$$
+
+$$
+(a,b)^* := \left{(a, b+kn) \mid k \in \mathbb{Z}_{\ge 0}\right}.
+$$
+
 This notation allows our algorithms to represent and compute over infinite inversion sets using finite and computable representations.
 
 ---
