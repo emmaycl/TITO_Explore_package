@@ -18,7 +18,7 @@ $$a \prec b \iff a+n \prec b+n$$
 A **block** of a TITO is an order-convex subset $I \subseteq \mathbb{Z}$ such that:
 
 - The restriction of $\prec$ to $I$ has neither a minimal nor a maximal element.
-- For any $a, c \in I$, the interval $\left\{b \in I \mid a \prec b \prec c\right\}$ is finite.
+- For any $a, c \in I$, the interval $\{b \in I \mid a \prec b \prec c\}$ is finite.
 
 A block $I$ is **waxing** if $x \prec x+n$ for all $x \in I$, and **waning** if $x+n \prec x$ for all $x \in I$.
 
