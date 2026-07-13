@@ -25,7 +25,7 @@ A block $I$ is **waxing** if $x \prec x+n$ for all $x \in I$, and **waning** if 
 ### 3. Inversions and Weak Order
 
 An **inversion** of a TITO $\prec$ is a reflection index $(a,b)$: an equivalence class $(a,b) \sim (a+n, b+n)$ with $a < b$ and $b \prec a$.
-The set of all inversions is the **Inversion Set** $N(\prec)$. The **weak order** is defined by the inclusion:
+The set of all inversions is the **Inversion Set** $N(\prec)$. The **weak order** on TITOs is defined by the inclusion of their inversion sets:
 $$\prec_1 \le \prec_2 \iff N(\prec_1) \subseteq N(\prec_2)$$
 
 ### 4. Star Notation
@@ -33,7 +33,7 @@ $$\prec_1 \le \prec_2 \iff N(\prec_1) \subseteq N(\prec_2)$$
 For handling infinite reflection indices, we define the **Star Notation**:
 
 $$
-(a,b)^* := `\lbrace (a, b+kn) \mid k \in \mathbb{Z}_{\ge 0} \rbrace.
+(a,b)^* := \lbrace (a, b+kn) \mid k \in \mathbb{Z}_{\ge 0} \rbrace.
 $$
 
 This notation allows our algorithms to represent and compute over infinite inversion sets using finite and computable representations.
