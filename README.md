@@ -18,7 +18,7 @@ $$a \prec b \iff a+n \prec b+n$$
 A **block** of a TITO is an order-convex subset $I \subseteq \mathbb{Z}$ such that:
 
 - The restriction of $\prec$ to $I$ has neither a minimal nor a maximal element.
-- For any $a, c \in I$, the interval $\{b \in I \mid a \prec b \prec c\}$ is finite.
+- For any $a, c \in I$, the interval &#123; $b \in I \mid a \prec b \prec c$ &#125; is finite.
 
 A block $I$ is **waxing** if $x \prec x+n$ for all $x \in I$, and **waning** if $x+n \prec x$ for all $x \in I$.
 
@@ -44,7 +44,7 @@ This notation allows our algorithms to represent and compute over infinite inver
 
 ### 1. Canonical Normalization
 
-Standardizes window notations into a canonical form. The algorithm reorders blocks such that the first element is the integer $r \in \{0, \dots, n-1\}$ belonging to the smallest residue class in that block.
+Standardizes window notations into a canonical form. The algorithm reorders blocks such that the first element is the integer $r \in$ &#123; $0, \dots, n-1$ &#125; belonging to the smallest residue class in that block.
 
 ### 2. $O(n^2)$ Weak Order Comparison
 
