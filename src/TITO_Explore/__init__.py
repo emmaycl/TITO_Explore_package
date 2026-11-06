@@ -1,6 +1,6 @@
 """Public package interface for TITO_Explore."""
 
-from .comparison import analyze_congruence_class_pairs
+from .comparison import analyze_congruence_class_pairs, compare_titos_overall
 from .inversion_set import (
     print_inversion_matrix,
     print_inversion_set,
@@ -9,6 +9,7 @@ from .inversion_set import (
 from .join import (
     compute_join_reflection_table,
     compute_tito_join,
+    compute_tito_join_tito,
     inversion_matrix_to_edges,
 )
 from .normalization import process_tito_blocks
@@ -27,7 +28,9 @@ __all__ = [
     "inversion_matrix_to_edges",
     "compute_join_reflection_table",
     "compute_tito_join",
+    "compute_tito_join_tito",
+    "compare_titos_overall",
     "reflection_rows_to_blocks_and_order",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"

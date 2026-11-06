@@ -510,7 +510,7 @@ def reconstruct_waxing_block_values(
     The smallest residue is the anchor. For every other residue j:
       - if there are finite rows anchor -> j, use the largest offset m and
         insert anchor + m + n;
-      - otherwise, if there are finite rows j -> anchor, use the smallest
+      - otherwise, if there are finite rows j -> anchor, use the largest
         offset m and insert anchor - m.
       - if neither direction has finite rows, use the residue representative j.
     """

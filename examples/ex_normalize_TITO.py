@@ -7,7 +7,7 @@ tito2 = TranslationInvariantTotalOrder(n=3, num_blocks=2, vectors=[[4, 3], [5]],
 tito3 = TranslationInvariantTotalOrder(n=3, num_blocks=2, vectors=[[5, 1], [9]], waxing_waning=[1, 1]) 
 tito4 = TranslationInvariantTotalOrder(n=3, num_blocks=2, vectors=[[1, 2], [12]], waxing_waning=[1, 1])
 tito5 = TranslationInvariantTotalOrder(n=3, num_blocks=2, vectors=[[0, 4], [2]], waxing_waning=[1, 1])
-tito6 = TranslationInvariantTotalOrder(n=3, num_blocks=2, vectors=[[4, 5, 6]], waxing_waning=[0, 0])
+tito6 = TranslationInvariantTotalOrder(n=3, num_blocks=1, vectors=[[4, 5, 6]], waxing_waning=[0])
 # Normalize the TITOs
 print(tito1)
 normalized_tito1 = process_tito_blocks(tito1)

@@ -14,29 +14,9 @@ def _process_pair(
     is_waning: bool,
     n: int,
 ) -> int:
-    if pos_i < pos_j:
-        tito = TranslationInvariantTotalOrder(
-            n=n, num_blocks=1, vectors=[[val_i, val_j]], waxing_waning=[1 if is_waning else 0]
-        )
-        leq = True
-    else:
-        tito = TranslationInvariantTotalOrder(
-            n=n, num_blocks=1, vectors=[[val_j, val_i]], waxing_waning=[1 if is_waning else 0]
-        )
-        leq = False
-
-    if not leq:
-        if tito.waxing_waning[0] == 1:
-            tito.vectors[0][0], tito.vectors[0][1] = tito.vectors[0][1], tito.vectors[0][0] - tito.n
-        else:
-            tito.vectors[0][0], tito.vectors[0][1] = tito.vectors[0][1], tito.vectors[0][0] + tito.n
-
-    normal = tito.vectors[0][0] - (tito.vectors[0][0] % tito.n)
-    for idx in range(len(tito.vectors[0])):
-        tito.vectors[0][idx] -= normal
-
-    _, value = tito.vectors[0]
-    return value
+    # Restrict to the pair without constructing an invalid partial TITO.
+    step = (-n if is_waning else n) if pos_i > pos_j else 0
+    return val_j + step - (val_i - val_i % n)
 
 
 def analyze_congruence_class_pairs(

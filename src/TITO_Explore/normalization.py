@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import List
+import warnings
 from TITO_Explore.types import TranslationInvariantTotalOrder
 
 def process_tito_blocks(tito: TranslationInvariantTotalOrder) -> List[List[int]]:
@@ -16,7 +17,7 @@ def process_tito_blocks(tito: TranslationInvariantTotalOrder) -> List[List[int]]
     processed_blocks: List[List[int]] = []
 
     if (not hasattr(tito, "waxing_waning")) or (len(tito.waxing_waning) != tito.num_blocks):
-        print("Warning: waxing_waning missing or wrong length — assuming all blocks are waxing.")
+        warnings.warn("waxing_waning missing or wrong length; assuming all blocks are waxing.", RuntimeWarning, stacklevel=2)
         waxing_waning_status = [0] * len(tito.vectors)
     else:
         waxing_waning_status = tito.waxing_waning

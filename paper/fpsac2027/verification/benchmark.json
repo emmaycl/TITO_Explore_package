@@ -1,0 +1,22 @@
+{
+  "python": "3.14.5",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "processor": "arm64",
+  "period": 6,
+  "W": 5,
+  "repeats": 7,
+  "joins_per_repeat": 100,
+  "median_seconds": 0.0003806279203854501,
+  "min_seconds": 0.00036797957960516215,
+  "max_seconds": 0.00040940084028989076,
+  "samples_seconds": [
+    0.00040940084028989076,
+    0.00040224875090643763,
+    0.00038170999847352504,
+    0.0003806279203854501,
+    0.00036797957960516215,
+    0.0003759341686964035,
+    0.00037125499919056894
+  ],
+  "scope": "Full object-returning join, including reconstruction and symbolic table verification; input construction excluded."
+}
