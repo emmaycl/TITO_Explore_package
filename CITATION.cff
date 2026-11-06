@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "Please cite the software version and the accompanying preprint."
+title: "TITO_Explore: computing with translation-invariant total orders"
+type: software
+version: 0.1.1
+date-released: 2026-11-06
+license: MIT
+authors:
+  - family-names: Jing
+    given-names: Yifan
+  - family-names: Lou
+    given-names: Emma Yicheng
+  - family-names: Sun
+    given-names: Shaotian
+  - family-names: Wu
+    given-names: Yuxuan
+repository-code: "https://github.com/emmaycl/TITO_Explore_package"
+references:
+  - type: article
+    title: "Computing tools for translation-invariant total orders"
+    authors:
+      - family-names: Jing
+        given-names: Yifan
+      - family-names: Lou
+        given-names: Emma Yicheng
+      - family-names: Sun
+        given-names: Shaotian
+      - family-names: Wu
+        given-names: Yuxuan
+    year: 2026
+    url: "https://arxiv.org/abs/2607.11709"

@@ -97,21 +97,26 @@ def compute_closure(n: int, initial_edges: List[Edge]) -> List[List[MatrixCell]]
 
 def update_indicators(matrix: List[List[MatrixCell]]) -> List[List[MatrixCell]]:
     """
-    Marks diagonal entries with non-empty value lists as indicator=1,
-    then propagates indicator=1 to edges whose start or end node has a loop.
+    Complete infinite-family flags on a closed TITO inversion matrix.
+
+    A walk is unbounded if it traverses a starred edge or a nonempty cycle,
+    even when neither endpoint lies on that cycle. With reflexive reachability
+    R and the matrix M of starred edges/cycles, the required flags are R M R.
+    Two Boolean products cost O(n^3). Values from compute_closure are preserved.
+    For unions of TITO inversion sets, every infinite cell is a full period-n
+    progression from its minimum; this is not for arbitrary weighted graphs.
     """
     n = len(matrix)
-    for i in range(n):
-        if matrix[i][i][0]:
-            matrix[i][i] = (matrix[i][i][0], 1)
-
+    reach = [[i == j or bool(matrix[i][j][0]) for j in range(n)] for i in range(n)]
+    marked = [[bool(matrix[i][j][0]) and (bool(matrix[i][j][1]) or i == j)
+               for j in range(n)] for i in range(n)]
+    through_mark = [[any(reach[i][k] and marked[k][j] for k in range(n))
+                     for j in range(n)] for i in range(n)]
     for i in range(n):
         for j in range(n):
-            if i == j:
-                continue
             values, _ = matrix[i][j]
-            if values and (matrix[i][i][1] == 1 or matrix[j][j][1] == 1):
-                matrix[i][j] = (values, 1)
+            infinite = any(through_mark[i][k] and reach[k][j] for k in range(n))
+            matrix[i][j] = (values, int(bool(values) and infinite))
     return matrix
 
 
@@ -203,9 +208,24 @@ def compute_tito_join_tito(
     if report is not None:
         raise ValueError(f"Could not reconstruct join TITO cleanly: {report}")
 
-    return TranslationInvariantTotalOrder(
+    result = TranslationInvariantTotalOrder(
         n=tito1.n,
         num_blocks=len(blocks),
         vectors=blocks,
         waxing_waning=waxing_waning,
     )
+    edges = inversion_matrix_to_edges(tito_to_inversion_set(tito1), tito1.n)
+    edges += inversion_matrix_to_edges(tito_to_inversion_set(tito2), tito1.n)
+    expected = update_indicators(compute_closure(tito1.n, edges))
+    actual = tito_to_inversion_set(result)
+
+    def canonical(cell):
+        if cell is None or not cell[0]:
+            return (), 0
+        values, star = cell
+        return ((min(values),) if star else tuple(sorted(set(values)))), int(bool(star))
+
+    if any(canonical(actual[i][j]) != canonical(expected[i][j])
+           for i in range(tito1.n) for j in range(tito1.n)):
+        raise ValueError("Reconstructed TITO inversion table differs from the computed closure.")
+    return result

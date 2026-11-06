@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "python_versions": [
+    "3.12.14",
+    "3.14.5"
+  ],
+  "ordered_pairs": 839,
+  "exhaustive_pairs": 333,
+  "seeded_pairs": 500,
+  "random_seed": 20261106,
+  "regressions": 5,
+  "demonstration": 1,
+  "command": "python -m unittest discover -s tests -v",
+  "limitations": "Bounded checks, not an unrestricted proof. CI configuration is included; no remote CI completion is implied."
+}

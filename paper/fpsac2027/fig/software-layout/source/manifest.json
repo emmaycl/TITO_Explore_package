@@ -1,0 +1,137 @@
+[
+  {
+    "stem": "representation",
+    "height": 238,
+    "title": "Finite representation of a period-4 order",
+    "edges": [
+      {
+        "from": "window",
+        "to": "table",
+        "start": [
+          278,
+          84
+        ],
+        "end": [
+          346,
+          84
+        ]
+      },
+      {
+        "from": "entry",
+        "to": "family",
+        "start": [
+          278,
+          203
+        ],
+        "end": [
+          346,
+          203
+        ]
+      }
+    ],
+    "groups": [
+      [
+        "window",
+        "table"
+      ],
+      [
+        "entry",
+        "family"
+      ]
+    ]
+  },
+  {
+    "stem": "join-mechanism",
+    "height": 169,
+    "title": "A cycle explains the reconstructed join",
+    "edges": [
+      {
+        "from": "r2",
+        "to": "r3",
+        "start": [
+          78,
+          60
+        ],
+        "end": [
+          198,
+          60
+        ]
+      },
+      {
+        "from": "r3",
+        "to": "r4",
+        "start": [
+          208,
+          71
+        ],
+        "end": [
+          148,
+          119
+        ]
+      },
+      {
+        "from": "r4",
+        "to": "r2",
+        "start": [
+          128,
+          119
+        ],
+        "end": [
+          68,
+          71
+        ]
+      },
+      {
+        "from": "cycle",
+        "to": "result",
+        "start": [
+          268,
+          84.5
+        ],
+        "end": [
+          356,
+          84.5
+        ]
+      }
+    ],
+    "groups": [
+      [
+        "cycle",
+        "result"
+      ],
+      [
+        "r2",
+        "r3"
+      ]
+    ]
+  },
+  {
+    "stem": "computed-tables",
+    "height": 341,
+    "title": "A computed period-6 join in complete reflection tables",
+    "edges": [
+      {
+        "from": "union",
+        "to": "join",
+        "start": [
+          300,
+          197.5
+        ],
+        "end": [
+          324,
+          197.5
+        ]
+      }
+    ],
+    "groups": [
+      [
+        "inputA",
+        "inputB"
+      ],
+      [
+        "union",
+        "join"
+      ]
+    ]
+  }
+]

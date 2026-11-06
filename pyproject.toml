@@ -4,11 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "TITO_Explore"
-version = "0.1.0"
-description = "A Python package for normalization, comparison, inversion sets, joins, and Hasse diagrams."
+version = "0.1.1"
+description = "Finite representations, comparison and joins of translation-invariant total orders."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
+license = {file = "LICENSE"}
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

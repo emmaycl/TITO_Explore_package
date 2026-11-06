@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "description": "Editable FPSAC manuscript figures",
+  "devDependencies": {
+    "playwright": "1.62.1"
+  },
+  "scripts": {
+    "build": "node software-layout/source/design.mjs && node software-layout/source/export.mjs",
+    "compute:example": "python3 software-layout/source/compute-example.py"
+  }
+}

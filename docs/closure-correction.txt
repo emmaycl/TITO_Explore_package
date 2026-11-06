@@ -1,0 +1,49 @@
+Closure correction for version 0.1.1
+
+The earlier update_indicators rule marked only entries incident to a vertex
+on a cycle. It missed infinite families on paths that enter and leave such a
+cycle when both endpoints are outside it. Five period-4 counterexamples from
+the manuscript review reproduce ValueError in compute_tito_join_tito at
+commit 45696c6a300f3e5aa21db617f9efcc3e1a66d7a1. All five are permanent tests
+in tests/test_orders.py and now give the expected three-block outputs.
+
+The repaired algorithm first performs the existing set-valued path pass.
+Let R be its reflexive reachability matrix. Let M mark all already starred
+entries and every nonempty diagonal (a positive cycle). The final star matrix
+is R M R, using Boolean matrix multiplication. A walk has unbounded possible
+weight exactly when it can traverse a marked edge or cycle. The two products
+take O(n^3) Boolean operations and do not rely on the order of updates.
+
+Why the finite data suffice for TITO inversion unions:
+1. The transitive closure of their union is again the inversion set of a TITO
+   (Barkley, arXiv:2502.05875, Section 4.1).
+2. The window description shows that each cell of a single TITO is either
+   empty, a finite progression, or a full period-n progression from its least
+   increment. For an infinite cell, its least increment and star flag suffice.
+3. Positive weights make every minimum path simple (except a positive simple
+   cycle for a diagonal). The guarded Floyd-Warshall pass contains these paths
+   and hence gives the minimum increment of every nonempty cell.
+4. An unstarred cell has neither a marked edge nor a cycle on any connecting
+   walk. Such walks are simple and have finitely many choices of edge weights;
+   the pass enumerates their sums. R M R identifies every remaining cell as
+   infinite. The TITO cell structure in (2) then supplies its entire family.
+
+This reasoning uses TITO inversion unions. For a general weighted graph an
+infinite set of path weights need not be a full period-n progression.
+
+Reconstruction is checked by recomputing the inversion table of the returned
+windows. Empty entries, finite sets and starred minima must agree with the
+closed table. This check is a consistency safeguard, not a substitute for the
+closure argument or the independent tests.
+
+The algorithm in arXiv:2607.11709v1, Algorithm 3, predates this correction.
+The software abstract explicitly records this difference; it does not claim
+that the old preprint proves the corrected algorithm or that v2 is published.
+
+Validation: five reported counterexamples; 333 ordered pairs exhaustively
+enumerated from small single-waxing-window families at periods 2 and 3; 500
+seeded random mixed-block pairs at periods 2--6; the period-6 demonstration.
+Independent order ranks and positive-increment path enumeration check joins,
+inversions, comparison, normalization, commutativity, idempotence and upper
+bounds. Bounds are 60, 120 or 240 as recorded in the tests. These bounded
+checks do not constitute a proof for all periods or all increments.

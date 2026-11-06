@@ -1,67 +1,73 @@
 # TITO_Explore
 
-TITO_Explore is a specialized Python package designed for the computational study of Translation-Invariant Total Orders (TITOs).
+TITO_Explore 0.1.1 is a standalone Python package for translation-invariant total orders (TITOs) of period n. It computes normalized windows, exact inversion sets, weak-order comparison and joins in the TITO lattice, including same-residue (imaginary) inversions. It has no runtime dependencies and requires Python 3.10 or later. Source code is licensed under [MIT](LICENSE).
 
-TITOs are central to algebraic combinatorics, specifically in the study of affine symmetric groups, weak orders, and lattice structures in representation theory. This project provides a rigorous algorithmic framework to bridge abstract order theory with finite computational representations.
+## Installation
 
-## Quick Link: [Python Notebook Demo](https://github.com/emmaycl/TITO_Explore_package/blob/main/examples/examples_demo.ipynb)
+From a checkout of this revision:
 
-## Mathematical Definitions
+```sh
+python -m venv .venv
+# macOS/Linux; on Windows use .venv\Scripts\activate
+. .venv/bin/activate
+python -m pip install .
+```
 
-### 1. Translation-Invariant Total Order (TITO)
+Use the exact Git commit recorded in the paper's `REPRODUCIBILITY.txt` when reproducing its results. Do not substitute the older 0.1.0 code. Version 0.1.1 corrects propagation of infinite inversion families through cycles; see [the correction and its scope](docs/closure-correction.txt).
 
-A total order $\prec$ on $\mathbb{Z}$ is a **TITO** with period $n$ if for all $a, b \in \mathbb{Z}$:
-$$a \prec b \iff a+n \prec b+n$$
+## Quick start
 
-### 2. Blocks and Convexity
+```python
+from TITO_Explore import (TranslationInvariantTotalOrder as TITO,
+                         compare_titos_overall, compute_tito_join_tito)
+A = TITO(6, 4, [[0, 13], [2, 9], [4], [5]], [0, 0, 0, 1])
+B = TITO(6, 4, [[0, 1], [2, 4], [3], [5]], [0, 0, 0, 1])
+assert compare_titos_overall(A, B) == "incomparable"
+J = compute_tito_join_tito(A, B)
+assert all(compare_titos_overall(X, J) == "tito1 < tito2"
+           for X in (A, B))
+print(J.vectors, J.waxing_waning)
+# [[0, 13], [2, -2, -3], [5]] [0, 1, 1]
+```
 
-A **block** of a TITO is an order-convex subset $I \subseteq \mathbb{Z}$ such that:
+This session is also [an executable file](examples/fpsac2027_join.py). Joining the two inputs creates a waning block on residues 2, 3, 4. The finite waxing block and the waning singleton are retained. The [notebook](examples/examples_demo.ipynb) covers further operations.
 
-- The restriction of $\prec$ to $I$ has neither a minimal nor a maximal element.
-- For any $a, c \in I$, the interval &#123; $b \in I \mid a \prec b \prec c$ &#125; is finite.
+## Representation and functions
 
-A block $I$ is **waxing** if $x \prec x+n$ for all $x \in I$, and **waning** if $x+n \prec x$ for all $x \in I$.
+A TITO is a total order on the integers invariant under simultaneous translation by n. A block is a maximal order-convex subset with finite intervals and no endpoints. Its window lists consecutive elements, one per residue in that block. All blocks together contain each residue exactly once. Repeat a waxing window by adding n, or a waning window by subtracting n. Blocks are listed in order; flags are 0 for waxing and 1 for waning.
 
-### 3. Inversions and Weak Order
+`TranslationInvariantTotalOrder(n, num_blocks, vectors, waxing_waning=None)` validates positive integer period, nonempty integer windows, residue coverage, block count and flags. Omitted flags mean all waxing. Invalid inputs raise `ValueError`. Do not mutate a constructed object's public fields into invalid data.
 
-An **inversion** of a TITO $\prec$ is a reflection index $(a,b)$: an equivalence class $(a,b) \sim (a+n, b+n)$ with $a < b$ and $b \prec a$.
-The set of all inversions is the **Inversion Set** $N(\prec)$. The **weak order** on TITOs is defined by the inclusion of their inversion sets:
-$$\prec_1 \le \prec_2 \iff N(\prec_1) \subseteq N(\prec_2)$$
+All functions below are exported from `TITO_Explore`:
 
-### 4. Star Notation
+| Function | Return value |
+| --- | --- |
+| `process_tito_blocks(A)` | Normalized list of windows; does not reorder blocks or change A. The least residue starts each window. |
+| `tito_to_inversion_set(A)` | n by n matrix: `None` or `([increments], star)`. Cell `[a][r]` describes inversions `(a,a+d)` with `d>0` and `(a+d)%n == r`. Star 1 adds all nonnegative multiples of n to each listed increment. |
+| `compare_titos_overall(A,B)` | Exactly `"tito1 < tito2"`, `"tito1 > tito2"`, `"tito1 = tito2"` or `"incomparable"`. |
+| `compute_join_reflection_table(A,B)` | List of triples `(a,a+d,star)`. The second field is a target integer, not an increment. Redundant starred representatives may occur. |
+| `compute_tito_join_tito(A,B)` | Join TITO. For comparable inputs it returns an original input object, possibly unnormalized. Otherwise it reconstructs windows and verifies their full symbolic table against the closure; inconsistency raises `ValueError`. |
+| `compute_tito_join(A,B)` | Legacy interface: an original TITO for comparable inputs, otherwise `(windows, flags, diagnostic_report)`. Prefer the object-returning function. |
 
-For handling infinite reflection indices, we define the **Star Notation**:
+Binary operations require equal periods. Reflection indices include same-residue pairs, which record waning behavior. Forgetting these indices gives the extended weak order quotient; this package computes in the TITO lattice itself. It does not implement other affine types, Hasse diagrams, meets or a SageMath adapter.
 
-$$
-(a,b)^* := \lbrace (a, b+kn) \mid k \in \mathbb{Z}_{\ge 0} \rbrace.
-$$
+Comparison performs O(n²) residue-component tests under unit-cost integer arithmetic. The weighted closure pass costs O(n³ W²), where W is the largest stored increment-list size, including redundant starred values; Boolean star propagation costs O(n³). These bounds describe closure stages, not the entire checked reconstruction. Large integer shifts can produce large lists and expensive joins.
 
-This notation allows our algorithms to represent and compute over infinite inversion sets using finite and computable representations.
+## Validation and reproduction
 
----
+```sh
+python -m unittest discover -s tests -v
+python examples/fpsac2027_join.py
+python examples/benchmark_join.py
+python paper/fpsac2027/fig/software-layout/source/compute-example.py
+```
 
-## Key Features
+The tests use independent integer-order ranks and bounded positive-path enumeration. They check 333 ordered pairs in exhaustive small waxing-window families, 500 seeded mixed-block pairs, five reported period-4 regressions, and the period-6 example (839 pairs total). Exact rules and bounds are in [the tests](tests/test_orders.py). They check inversions, normalization, comparison, both join interfaces, commutativity, idempotence and upper bounds, plus invalid inputs. Bounded checks are evidence, not a proof for arbitrary inputs. GitHub Actions is configured for Python 3.10–3.13.
 
-### 1. Canonical Normalization
+The [paper bundle](paper/fpsac2027/README.txt) contains the figure data, independent example verifier, editable HTML/SVG generator, embedded font and PDF exporter. No private manuscript files are needed. The benchmark reports measured local timings and environment, rather than a cross-machine performance guarantee.
 
-Standardizes window notations into a canonical form. The algorithm reorders blocks such that the first element is the integer $r \in$ &#123; $0, \dots, n-1$ &#125; belonging to the smallest residue class in that block.
+## References and development
 
-### 2. $O(n^2)$ Weak Order Comparison
+The companion preprint is Yifan Jing, Emma Yicheng Lou, Shaotian Sun and Yuxuan Wu, *Computing Tools for Translation-Invariant Total Orders*, arXiv:2607.11709 (2026). Its original Algorithm 3 needs the correction documented above. Mathematical definitions follow Grant Barkley's work on extended weak order for affine symmetric groups. See `CITATION.cff` for software citation metadata.
 
-TITO_Explore partitions $N(\prec)$ into $\frac{n(n+1)}{2}$ disjoint subsets. By classifying residue class pairs into combinatorial groups, it determines global weak-order relations in quadratic time.
-
-<img width="708" height="367" alt="image" src="https://github.com/user-attachments/assets/f8dd9af5-9937-4669-ac77-887002353608" />
-
-### 3. Graph-Based Join Computation
-
-Computes the least upper bound (join) of two TITOs via a modified **Floyd-Warshall** algorithm:
-
-- **Complexity:** $O(n^3 W^2)$, where $W$ is the maximum cardinality of basis increments (aka length of the vector in the reflection table in our code).
-- **Infinite Propagation:** Uses cycle detection in the graph to identify infinite inversion sets $(a,b)^*$.
-
-<img width="636" height="326" alt="image" src="https://github.com/user-attachments/assets/9bbd411f-9656-4e61-a64a-21a1861a0135" />
-
----
-
-For a visual summary of the mathematical foundations and algorithmic approach of this project, please view our research poster:
-**[Project Poster (PDF)](./project_poster.pdf)**
+Report bugs, preferably with input windows and flags, through GitHub issues. Development uses pull requests and regression tests. Planned work includes reducing redundant starred increments and exploring SageMath interoperability. No dedicated SageMath integration is currently available.
